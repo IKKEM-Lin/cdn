@@ -353,7 +353,7 @@ var PDFiumModule = (() => {
         }
         var wasmBinaryFile;
         if (PDFiumModule.url) {
-            wasmBinaryFile = PDFiumModule.url + '/pdfium.wasm';
+            wasmBinaryFile = 'https://cdn.hzc.pub/pdfium.wasm';
         }
         else {
             wasmBinaryFile = 'pdfium.wasm';
