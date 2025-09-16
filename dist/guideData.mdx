@@ -1,0 +1,211 @@
+
+<Link href="/" className="inline-block my-10 hover:text-primary no-underline transition-colors">
+  ← 返回首页
+</Link>
+
+# MDX Report 功能组件介绍
+## 概述
+
+MDX Report 提供了丰富的功能组件，用于创建交互式的数据报告。本页面将详细介绍每个组件的功能和使用方法。
+
+---
+
+## 数据可视化组件
+
+### Vega 图表组件
+
+Vega 组件用于渲染 Vega 和 Vega-Lite 图表，支持响应式设计。
+
+#### 参数说明
+- `spec`: [VisualizationSpec](https://vega.github.io/vega-lite/docs/spec.html) | string - Vega 或 Vega-Lite 图表规范
+- `options`: [EmbedOptions](https://github.com/vega/vega-embed?tab=readme-ov-file#options) - Vega-Embed 配置选项
+- `className`: string - 自定义 CSS 类名
+- `responsive`: boolean - 是否启用响应式设计（默认: true）
+- `breakpoints`: BreakpointConfig[] - 响应式断点配置
+
+<Vega spec={{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","data":{"url":"https://vega.github.io/vega-datasets/data/movies.json"},"repeat":{"layer":["US Gross","Worldwide Gross"]},"spec":{"mark":"line","encoding":{"x":{"bin":true,"field":"IMDB Rating","type":"quantitative"},"y":{"aggregate":"mean","field":{"repeat":"layer"},"type":"quantitative","title":"Mean of US and Worldwide Gross"},"color":{"datum":{"repeat":"layer"},"type":"nominal"}}}}} />
+
+### ChartDashboard 图表仪表板
+
+ChartDashboard 提供一个完整的图表仪表板，可以展示多个图表并支持标签页切换。
+
+#### 参数说明
+- `charts`: ChartConfig[] - 图表配置数组
+- `className`: string - 自定义 CSS 类名
+- `defaultChartId`: string - 默认选中的图表 ID
+- `showTabs`: boolean - 是否显示标签页（默认: true）
+- `chartHeight`: number - 图表高度（默认: 300）
+
+<ChartDashboard 
+  charts={[{"id":"scatter-plot","title":"散点图","description":"显示IMDB评分与烂番茄评分的分布情况","spec":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","data":{"url":"https://vega.github.io/vega-datasets/data/movies.json"},"transform":[{"filter":{"and":[{"field":"IMDB Rating","valid":true},{"field":"Rotten Tomatoes Rating","valid":true}]}}],"mark":"circle","encoding":{"x":{"field":"IMDB Rating","type":"quantitative"},"y":{"field":"Rotten Tomatoes Rating","type":"quantitative"},"color":{"field":"Major Genre","type":"nominal"}}}},{"id":"bar-chart","title":"条形图","description":"显示不同电影类型的数量","spec":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","data":{"url":"https://vega.github.io/vega-datasets/data/movies.json"},"mark":"bar","encoding":{"x":{"field":"Major Genre","type":"nominal","axis":{"title":"电影类型"}},"y":{"aggregate":"count","type":"quantitative","axis":{"title":"电影数量"}}}}},{"id":"line-chart","title":"折线图","description":"显示不同年份的电影平均评分趋势","spec":{"$schema":"https://vega.github.io/schema/vega-lite/v6.json","data":{"url":"https://vega.github.io/vega-datasets/data/movies.json"},"transform":[{"filter":"datum['IMDB Rating'] != null"},{"timeUnit":"year","field":"Release Date","as":"year"}],"mark":"line","encoding":{"x":{"field":"year","type":"temporal","timeUnit":"year","axis":{"title":"年份"}},"y":{"aggregate":"mean","field":"IMDB Rating","type":"quantitative","axis":{"title":"平均IMDB评分"}}}}}]} 
+  showTabs={true}
+/>
+
+---
+
+## 化学结构可视化组件
+
+### CompoundCard 化合物卡片
+
+CompoundCard 用于展示单个化合物的信息，包括 2D 结构图像和基本属性。
+
+#### 参数说明
+- `compound`: CompoundData - 化合物数据对象
+  - `cid`: number (可选) - PubChem Compound ID
+  - `smiles`: string - SMILES 表达式
+  - `name`: string - 物质名称
+  - `dataUrl`: string (可选) - 3D 结构数据 URL
+- `className`: string - 自定义 CSS 类名
+
+<div className="max-w-[300px]">
+  <CompoundCard 
+    compound={{"cid":2244,"smiles":"CCO","name":"Ethanol","dataUrl":"/test.cif"}} 
+  />
+</div>
+
+### CompoundCardList 化合物卡片列表
+
+CompoundCardList 以网格布局展示多个化合物卡片。
+
+#### 参数说明
+- `compounds`: CompoundData[] - 化合物数据数组
+- `className`: string - 自定义 CSS 类名
+- `cardClassName`: string - 卡片组件的自定义 CSS 类名
+
+<CompoundCardList 
+  compounds={[{"cid":2244,"smiles":"CCO","name":"Ethanol","dataUrl":"/test.cif"},{"cid":702,"smiles":"CC(C)C=O","name":"Isobutyraldehyde"},{"cid":887,"smiles":"C(C(=O)O)N","name":"Glycine"},{"cid":5743,"smiles":"C1=CC=C(C=C1)CC(C(=O)O)N","name":"Phenylalanine"},{"cid":5860,"smiles":"C(C(C(=O)O)N)C(=O)N","name":"Asparagine"},{"cid":5950,"smiles":"C(C(C(=O)O)N)C(=O)O","name":"Aspartic acid"}]} 
+/>
+
+---
+
+## 数据展示组件
+
+### MdxTable 数据表格
+
+MdxTable 用于展示结构化数据的表格组件。
+
+#### 参数说明
+- `columns`: \{ key: string; title: string \}[] - 列配置
+- `data`: any[] - 表格数据
+- `className`: string - 自定义 CSS 类名
+
+<MdxTable
+  columns={[{"key":"id","title":"ID"},{"key":"name","title":"姓名"},{"key":"email","title":"邮箱"},{"key":"role","title":"角色"}]} 
+  data={[{"id":"1","name":"张三","email":"zhangsan@example.com","role":"开发者"},{"id":"2","name":"李四","email":"lisi@example.com","role":"设计师"},{"id":"3","name":"王五","email":"wangwu@example.com","role":"产品经理"}]}  
+/>
+
+---
+
+## 3D 分子查看器
+
+### Viewer3DMol 3D 分子查看器
+
+Viewer3DMol 使用 3Dmol.js 渲染 3D 分子结构。
+
+#### 参数说明
+- `width`: string - 容器宽度
+- `height`: string - 容器高度
+- `style`: React.CSSProperties - 自定义样式
+- `config`: [ViewerSpec](https://github.com/3dmol/3Dmol.js/blob/77c5fbdc3258d0b9401d091d9b8ec67834fc9c14/src/GLViewer.ts#L5192-L5252) - 3Dmol 查看器配置
+- `dataUrl`: string - 数据文件 URL
+- `dataType`: string - 数据类型（如 pdb, cif 等）
+
+<Viewer3DMol
+  width="300px"
+  height="300px"
+  dataUrl="/test.cif"
+  dataType="cif"
+/>
+
+---
+
+## 导航组件
+
+### Link 链接组件
+
+<Link href="/">首页</Link> | <Link href="/about">关于</Link>
+
+使用 Link 组件可以在不同页面间进行导航。
+
+---
+
+## Tailwind CSS 布局应用
+
+MDX Report 使用 Tailwind CSS 进行样式设计，提供了强大的响应式布局功能。以下是一些常见的布局示例。
+
+### Flex 布局
+
+Flex 布局是创建一维布局的强大工具，适用于行或列的布局。
+
+#### 基本使用
+
+使用 `flex` 类可以创建弹性容器，配合其他 Tailwind 类可以实现各种布局效果：
+
+<div className="flex gap-4 mb-4">
+  <div className="bg-blue-100 p-4 rounded">Item 1</div>
+  <div className="bg-green-100 p-4 rounded">Item 2</div>
+  <div className="bg-yellow-100 p-4 rounded">Item 3</div>
+</div>
+
+#### 对齐方式
+
+通过 `justify-content` 和 `align-items` 相关类可以控制元素对齐：
+
+<div className="flex justify-between items-center bg-gray-100 p-4 mb-4 rounded">
+  <div className="bg-blue-200 p-2 rounded">左侧</div>
+  <div className="bg-green-200 p-2 rounded">居中</div>
+  <div className="bg-yellow-200 p-2 rounded">右侧</div>
+</div>
+
+#### 响应式 Flex
+
+在不同屏幕尺寸下使用不同的 Flex 行为：
+
+<div className="flex flex-col md:flex-row gap-4 mb-4">
+  <div className="bg-blue-100 p-4 rounded md:w-1/3">内容 1</div>
+  <div className="bg-green-100 p-4 rounded md:w-1/3">内容 2</div>
+  <div className="bg-yellow-100 p-4 rounded md:w-1/3">内容 3</div>
+</div>
+
+### Grid 布局
+
+Grid 布局是创建二维布局的强有力工具，适用于复杂的网格结构。
+
+#### 基本网格
+
+使用 `grid` 类配合 `grid-cols-*` 可以创建网格布局：
+
+<div className="grid grid-cols-3 gap-4 mb-4">
+  <div className="bg-blue-100 p-4 rounded">格子 1</div>
+  <div className="bg-green-100 p-4 rounded">格子 2</div>
+  <div className="bg-yellow-100 p-4 rounded">格子 3</div>
+  <div className="bg-red-100 p-4 rounded">格子 4</div>
+  <div className="bg-purple-100 p-4 rounded">格子 5</div>
+  <div className="bg-pink-100 p-4 rounded">格子 6</div>
+</div>
+
+#### 响应式网格
+
+根据屏幕尺寸调整网格列数：
+
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+  <div className="bg-blue-100 p-4 rounded">项目 1</div>
+  <div className="bg-green-100 p-4 rounded">项目 2</div>
+  <div className="bg-yellow-100 p-4 rounded">项目 3</div>
+  <div className="bg-red-100 p-4 rounded">项目 4</div>
+</div>
+
+#### 复杂网格布局
+
+使用 `col-span` 和 `row-span` 创建复杂的网格布局：
+
+<div className="grid grid-cols-4 grid-rows-3 gap-4 mb-4">
+  <div className="bg-blue-100 p-4 rounded col-span-2 row-span-2">大格子</div>
+  <div className="bg-green-100 p-4 rounded">小格子 1</div>
+  <div className="bg-yellow-100 p-4 rounded">小格子 2</div>
+  <div className="bg-red-100 p-4 rounded">小格子 3</div>
+  <div className="bg-purple-100 p-4 rounded">小格子 4</div>
+  <div className="bg-pink-100 p-4 rounded col-span-2">宽格子</div>
+</div>
+
+---
